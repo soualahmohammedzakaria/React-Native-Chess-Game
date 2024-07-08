@@ -52,6 +52,9 @@ const Piece = ({ engine, piece, position, onTurn, enabled }: PieceProps) => {
         translateX.value = withTiming(x)
         translateY.value = withTiming(y, {}, () => isActive.value = false)
         if(move) {
+            if (move.piece === 'p' && (move.to[1] === '8' || move.to[1] === '1')) {
+                move.promotion = 'q';
+              }
             engine.move(move)
             onTurn()
             playMoveSound(engine, move)
