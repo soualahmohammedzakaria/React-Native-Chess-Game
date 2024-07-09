@@ -19,23 +19,29 @@ export default function Settings() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.row}>
-        <Text style={styles.label}>Sound</Text>
-        <Switch
-          trackColor={{ false: "#767577", true: colors.BoardBlack }}
-          thumbColor="#f4f3f4"
-          onValueChange={toggleSoundSwitch}
-          value={isSoundEnabled}
-        />
+      <View>
+        <View style={styles.row}> 
+          <Text style={styles.label}>Sound</Text>
+          <Switch
+            trackColor={{ false: "#767577", true: colors.BoardBlack }}
+            thumbColor="#f4f3f4"
+            onValueChange={toggleSoundSwitch}
+            value={isSoundEnabled}
+          />
+        </View>
+        <Text style={styles.muted}>Enable the game sounds</Text>
       </View>
-      <View style={styles.row}>
-        <Text style={styles.label}>Flip Board</Text>
-        <Switch
-          trackColor={{ false: "#767577", true: colors.BoardBlack }}
-          thumbColor="#f4f3f4"
-          onValueChange={toggleFlipPiecesSwitch}
-          value={isFlipPiecesEnabled}
-        />
+      <View>
+        <View style={styles.row}>
+          <Text style={styles.label}>Flip Board</Text>
+          <Switch
+            trackColor={{ false: "#767577", true: colors.BoardBlack }}
+            thumbColor="#f4f3f4"
+            onValueChange={toggleFlipPiecesSwitch}
+            value={isFlipPiecesEnabled}
+          />
+        </View>
+        <Text style={styles.muted}>Automatically rotate the board to face the player</Text>
       </View>
     </SafeAreaView>
   );
@@ -46,6 +52,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#242320",
     padding: 20,
+    gap: 10,
   },
   row: {
     flexDirection: 'row',
@@ -56,6 +63,11 @@ const styles = StyleSheet.create({
   label: {
     color: '#fff',
     fontSize: 18,
+    fontFamily: 'Poppins-SemiBold',
+  },
+  muted: {
+    color: '#ccc',
+    fontSize: 14,
     fontFamily: 'Poppins-SemiBold',
   },
 });
