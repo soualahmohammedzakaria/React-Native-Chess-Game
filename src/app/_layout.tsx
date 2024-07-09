@@ -1,22 +1,36 @@
-import Board from '@/components/Board';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { SplashScreen, Stack } from 'expo-router';
+import { useFonts } from 'expo-font';
+import { useEffect } from 'react';
+import { SettingsProvider } from '@/utils/SettingsContext';
 
-export default function Chess() {
+SplashScreen.preventAutoHideAsync();
+
+const RootLayout = () => {
+  const [fontsLoaded, error] = useFonts({
+    'Poppins-SemiBold': require('@/assets/fonts/Poppins-SemiBold.ttf'),
+  });
+
+  useEffect(() => {
+    if (error) throw error;
+
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, error]);
+
+  if (!fontsLoaded && !error) {
+    return null;
+  }
+
   return (
-    <>
-      <View style={styles.container}>
-        <Board />
-      </View>
-      <StatusBar style="auto" />
-    </>
+    <SettingsProvider>
+      <Stack>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="game" options={{ headerShown: false }} />
+        <Stack.Screen name="settings" options={{ headerShown: false }} />
+      </Stack>
+    </SettingsProvider>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    backgroundColor: "#242320",
-  },
-});
+export default RootLayout;

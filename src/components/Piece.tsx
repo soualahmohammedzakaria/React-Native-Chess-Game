@@ -38,8 +38,6 @@ interface PieceProps {
 
 const Piece = ({ engine, piece, position, onTurn, enabled }: PieceProps) => {  
     
-
-
     const isActive = useSharedValue(false);
     const offsetX = useSharedValue(0);
     const offsetY = useSharedValue(0);
@@ -117,6 +115,7 @@ const Piece = ({ engine, piece, position, onTurn, enabled }: PieceProps) => {
         sprite: {
           width: sizes.square,
           height: sizes.square,
+          //transform: [{ rotate: piece[0] === 'b' ? '180deg' : '0deg' }],
         }
     })
 
