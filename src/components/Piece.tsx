@@ -40,7 +40,7 @@ interface PieceProps {
 const Piece = ({ engine, piece, position, onTurn, enabled }: PieceProps) => {  
     const context = useContext(SettingsContext);
     if (!context) throw new Error('Settings must be used within a SettingsProvider');
-    const { isSoundEnabled } = context;
+    const { isSoundEnabled, isFlipPiecesEnabled } = context;
     
     const isActive = useSharedValue(false);
     const offsetX = useSharedValue(0);
@@ -114,12 +114,14 @@ const Piece = ({ engine, piece, position, onTurn, enabled }: PieceProps) => {
             transform: [{ translateX: transl.x }, { translateY: transl.y }],
         }
     })
+
+    const rot = isFlipPiecesEnabled ? (engine.turn() === 'b' ? '180deg' : '0deg') : (piece[0] === 'b' ? '180deg' : '0deg')
     
     const style = StyleSheet.create({
         sprite: {
           width: sizes.square,
           height: sizes.square,
-          //transform: [{ rotate: piece[0] === 'b' ? '180deg' : '0deg' }],
+          transform: [{ rotate: rot }],
         }
     })
 

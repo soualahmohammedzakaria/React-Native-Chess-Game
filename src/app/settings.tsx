@@ -29,7 +29,7 @@ export default function Settings() {
         />
       </View>
       <View style={styles.row}>
-        <Text style={styles.label}>Flip Pieces</Text>
+        <Text style={styles.label}>Flip Board</Text>
         <Switch
           trackColor={{ false: "#767577", true: colors.BoardBlack }}
           thumbColor="#f4f3f4"
