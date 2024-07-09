@@ -1,12 +1,13 @@
 import { Chess, Square } from "chess.js";
 import { toPosition, toTranslation } from "@/utils/translation";
 import { colors, sizes } from "@/constants/tokens";
-import React, { useCallback } from "react";
+import React, { useCallback, useContext } from "react";
 import { StyleSheet, Image } from "react-native";
 import { PanGestureHandler } from "react-native-gesture-handler";
 import Animated, { runOnJS, useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { Vector } from "react-native-redash";
 import { playMoveSound, playIllegalMoveSound } from "@/utils/soundsPlayer";
+import { SettingsContext } from "@/utils/SettingsContext";
 
 type Player = "b" | "w";
 type Type = "q" | "r" | "n" | "b" | "k" | "p";
@@ -37,6 +38,9 @@ interface PieceProps {
 }
 
 const Piece = ({ engine, piece, position, onTurn, enabled }: PieceProps) => {  
+    const context = useContext(SettingsContext);
+    if (!context) throw new Error('Settings must be used within a SettingsProvider');
+    const { isSoundEnabled } = context;
     
     const isActive = useSharedValue(false);
     const offsetX = useSharedValue(0);
@@ -55,9 +59,9 @@ const Piece = ({ engine, piece, position, onTurn, enabled }: PieceProps) => {
               }
             engine.move(move)
             onTurn()
-            playMoveSound(engine, move)
+            playMoveSound(engine, move, isSoundEnabled)
         }else{
-            playIllegalMoveSound()
+            playIllegalMoveSound(isSoundEnabled)
         }
     }, [engine, translateX, translateY, onTurn, isActive, offsetX, offsetY])
 
