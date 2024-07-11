@@ -49,7 +49,7 @@ const BottomTab: React.FC<BottomTabProps> = ({ onRestart, onUndo, onCopyPGN, mov
                         <Icon name="copy-all" size={30} color="white" />
                         <Text style={styles.tabButtonText}>Copy PGN</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.tabButton}>
+                    <TouchableOpacity style={styles.tabButton} activeOpacity={1}>
                         <Text style={{
                             color: 'white',
                             fontSize: 22,

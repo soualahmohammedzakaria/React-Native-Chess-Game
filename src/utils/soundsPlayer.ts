@@ -4,15 +4,20 @@ import { Audio } from "expo-av";
 export const playMoveSound = async (engine: Chess, move: any, isSoundEnabled: boolean) => {
   if (isSoundEnabled) {
     if (engine.isGameOver()) {
-      const { sound: gameOver } = await Audio.Sound.createAsync(require("@/assets/sounds/gameover.mp3"));
-      gameOver.playAsync();
+      if(engine.isCheck()) {
+        const { sound: gameOver } = await Audio.Sound.createAsync(require("@/assets/sounds/check_checkmate.mp3"));
+        gameOver.playAsync();
+      } else {
+        const { sound: gameOver } = await Audio.Sound.createAsync(require("@/assets/sounds/gameover.mp3"));
+        gameOver.playAsync();
+      }
     } else if (engine.isCheck()) {
       const { sound: check } = await Audio.Sound.createAsync(require("@/assets/sounds/check.mp3"));
       check.playAsync();
     } else if (move.flags.includes('k') || move.flags.includes('q')) {
       const { sound: castle } = await Audio.Sound.createAsync(require("@/assets/sounds/castle.mp3"));
       castle.playAsync();
-    } else if (move.flags.includes('c')) {
+    } else if (move.flags.includes('c') || move.flags.includes('e')) {
       const { sound: capture } = await Audio.Sound.createAsync(require("@/assets/sounds/capture.mp3"));
       capture.playAsync();
     } else {
