@@ -2,9 +2,12 @@ import { Dimensions } from "react-native";
 const { width: screenWidth } = Dimensions.get('window');
 
 export const colors = {
-	BoardWhite: '#f0dab5',
-	BoardBlack: '#b38664',
-	PieceHeld: '#aba23b'
+	LightBoardWhite: '#648544',
+	LightBoardBlack: '#E6E9C6',
+	LightPieceHeld: '#ffff0080',
+	DarkBoardWhite: '#f0dab5',
+	DarkBoardBlack: '#b38664',
+	DarkPieceHeld: '#aba23b',
 }
 
 export const sizes = {

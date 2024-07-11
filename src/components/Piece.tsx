@@ -1,142 +1,160 @@
-import { Chess, Square } from "chess.js";
-import { toPosition, toTranslation } from "@/utils/translation";
-import { colors, sizes } from "@/constants/tokens";
-import React, { useCallback, useContext } from "react";
-import { StyleSheet, Image } from "react-native";
-import { PanGestureHandler } from "react-native-gesture-handler";
-import Animated, { runOnJS, useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
-import { Vector } from "react-native-redash";
-import { playMoveSound, playIllegalMoveSound } from "@/utils/soundsPlayer";
-import { SettingsContext } from "@/utils/SettingsContext";
+import { colors, sizes } from '@/constants/tokens'
+import { SettingsContext } from '@/utils/SettingsContext'
+import { playIllegalMoveSound, playMoveSound } from '@/utils/soundsPlayer'
+import { toPosition, toTranslation } from '@/utils/translation'
+import { Chess, Square } from 'chess.js'
+import React, { useCallback, useContext } from 'react'
+import { Image, StyleSheet } from 'react-native'
+import { PanGestureHandler } from 'react-native-gesture-handler'
+import Animated, {
+	runOnJS,
+	useAnimatedGestureHandler,
+	useAnimatedStyle,
+	useSharedValue,
+	withTiming,
+} from 'react-native-reanimated'
+import { Vector } from 'react-native-redash'
 
-type Player = "b" | "w";
-type Type = "q" | "r" | "n" | "b" | "k" | "p";
-type Piece = `${Player}${Type}`;
-type Pieces = Record<Piece, ReturnType<typeof require>>;
+type Player = 'b' | 'w'
+type Type = 'q' | 'r' | 'n' | 'b' | 'k' | 'p'
+type Piece = `${Player}${Type}`
+type Pieces = Record<Piece, ReturnType<typeof require>>
 export const PIECES: Pieces = {
-    br: require("@/assets/pieces/br.png"),
-    bp: require("@/assets/pieces/bp.png"),
-    bn: require("@/assets/pieces/bn.png"),
-    bb: require("@/assets/pieces/bb.png"),
-    bq: require("@/assets/pieces/bq.png"),
-    bk: require("@/assets/pieces/bk.png"),
-    wr: require("@/assets/pieces/wr.png"),
-    wn: require("@/assets/pieces/wn.png"),
-    wb: require("@/assets/pieces/wb.png"),
-    wq: require("@/assets/pieces/wq.png"),
-    wk: require("@/assets/pieces/wk.png"),
-    wp: require("@/assets/pieces/wp.png"),
+	br: require('@/assets/pieces/br.png'),
+	bp: require('@/assets/pieces/bp.png'),
+	bn: require('@/assets/pieces/bn.png'),
+	bb: require('@/assets/pieces/bb.png'),
+	bq: require('@/assets/pieces/bq.png'),
+	bk: require('@/assets/pieces/bk.png'),
+	wr: require('@/assets/pieces/wr.png'),
+	wn: require('@/assets/pieces/wn.png'),
+	wb: require('@/assets/pieces/wb.png'),
+	wq: require('@/assets/pieces/wq.png'),
+	wk: require('@/assets/pieces/wk.png'),
+	wp: require('@/assets/pieces/wp.png'),
 }
 
 interface PieceProps {
-    key: string;
-    engine: Chess;
-    piece: Piece;
-    position: Vector;
-    onTurn: () => void;
-    enabled: boolean;
+	key: string
+	engine: Chess
+	piece: Piece
+	position: Vector
+	onTurn: () => void
+	enabled: boolean
 }
 
-const Piece = ({ engine, piece, position, onTurn, enabled }: PieceProps) => {  
-    const context = useContext(SettingsContext);
-    if (!context) throw new Error('Settings must be used within a SettingsProvider');
-    const { isSoundEnabled, isFlipPiecesEnabled } = context;
-    
-    const isActive = useSharedValue(false);
-    const offsetX = useSharedValue(0);
-    const offsetY = useSharedValue(0);
-    const translateX = useSharedValue(position.x);
-    const translateY = useSharedValue(position.y);
+const Piece = ({ engine, piece, position, onTurn, enabled }: PieceProps) => {
+	const context = useContext(SettingsContext)
+	if (!context) throw new Error('Settings must be used within a SettingsProvider')
+	const { isSoundEnabled, isFlipPiecesEnabled, isDarkThemeEnabled } = context
 
-    const movePiece = useCallback(async (from: Square, to: Square) => {
-        const move = engine.moves({ verbose: true }).find(move => move.from === from && move.to === to)
-        const { x, y } = toTranslation(move ? to : from)
-        translateX.value = withTiming(x)
-        translateY.value = withTiming(y, {}, () => isActive.value = false)
-        if(move) {
-            if (move.piece === 'p' && (move.to[1] === '8' || move.to[1] === '1')) {
-                move.promotion = 'q';
-              }
-            engine.move(move)
-            onTurn()
-            playMoveSound(engine, move, isSoundEnabled)
-        }else{
-            playIllegalMoveSound(isSoundEnabled)
-        }
-    }, [engine, translateX, translateY, onTurn, isActive, offsetX, offsetY])
+	const isActive = useSharedValue(false)
+	const offsetX = useSharedValue(0)
+	const offsetY = useSharedValue(0)
+	const translateX = useSharedValue(position.x)
+	const translateY = useSharedValue(position.y)
 
-    const onPieceMoving = useAnimatedGestureHandler({
-        onStart: () => {
-            isActive.value = true
-            offsetX.value = translateX.value
-            offsetY.value = translateY.value
-        },
-        onActive: ({ translationX, translationY }) => {
-            translateX.value = offsetX.value + translationX
-            translateY.value = offsetY.value + translationY
-        },
-        onEnd: () => {   
-            const from = toPosition({ x: offsetX.value, y: offsetY.value })
-            const to = toPosition({ x: translateX.value, y: translateY.value })
-            runOnJS(movePiece)(from, to)
-        }
-    })
+	const movePiece = useCallback(
+		async (from: Square, to: Square) => {
+			const move = engine
+				.moves({ verbose: true })
+				.find((move) => move.from === from && move.to === to)
+			const { x, y } = toTranslation(move ? to : from)
+			translateX.value = withTiming(x)
+			translateY.value = withTiming(y, {}, () => (isActive.value = false))
+			if (move) {
+				if (move.piece === 'p' && (move.to[1] === '8' || move.to[1] === '1')) {
+					move.promotion = 'q'
+				}
+				engine.move(move)
+				onTurn()
+				playMoveSound(engine, move, isSoundEnabled)
+			} else {
+				playIllegalMoveSound(isSoundEnabled)
+			}
+		},
+		[engine, translateX, translateY, onTurn, isActive, offsetX, offsetY],
+	)
 
-    const animatedStyle = useAnimatedStyle(() => ({
-        position: "absolute",
-        zIndex: isActive.value ? 100 : 10, 
-        width: sizes.square,
-        height: sizes.square,
-        transform: [{ translateX: translateX.value }, { translateY: translateY.value }],
-    }))
+	const onPieceMoving = useAnimatedGestureHandler({
+		onStart: () => {
+			isActive.value = true
+			offsetX.value = translateX.value
+			offsetY.value = translateY.value
+		},
+		onActive: ({ translationX, translationY }) => {
+			translateX.value = offsetX.value + translationX
+			translateY.value = offsetY.value + translationY
+		},
+		onEnd: () => {
+			const from = toPosition({ x: offsetX.value, y: offsetY.value })
+			const to = toPosition({ x: translateX.value, y: translateY.value })
+			runOnJS(movePiece)(from, to)
+		},
+	})
 
-    const source = useAnimatedStyle(() => {
-        return {
-            backgroundColor: colors.PieceHeld,
-            opacity: isActive.value ? 1 : 0,
-            position: "absolute",
-            zIndex: isActive.value ? 100 : 10, 
-            width: sizes.square,
-            height: sizes.square,
-            transform: [{ translateX: offsetX.value }, { translateY: offsetY.value }],
-        }
-    })
+	const animatedStyle = useAnimatedStyle(() => ({
+		position: 'absolute',
+		zIndex: isActive.value ? 100 : 10,
+		width: sizes.square,
+		height: sizes.square,
+		transform: [{ translateX: translateX.value }, { translateY: translateY.value }],
+	}))
 
-    const destination = useAnimatedStyle(() => {
-        const transl = toTranslation(toPosition({ x: translateX.value, y: translateY.value }))
-        return {
-            backgroundColor: colors.PieceHeld,
-            opacity: isActive.value ? 1 : 0,
-            position: "absolute",
-            zIndex: isActive.value ? 100 : 10, 
-            width: sizes.square,
-            height: sizes.square,
-            transform: [{ translateX: transl.x }, { translateY: transl.y }],
-        }
-    })
+	const source = useAnimatedStyle(() => {
+		return {
+			backgroundColor: isDarkThemeEnabled ? colors.DarkPieceHeld : colors.LightPieceHeld,
+			opacity: isActive.value ? 1 : 0,
+			position: 'absolute',
+			zIndex: isActive.value ? 100 : 10,
+			width: sizes.square,
+			height: sizes.square,
+			transform: [{ translateX: offsetX.value }, { translateY: offsetY.value }],
+		}
+	})
 
-    const rot = isFlipPiecesEnabled ? (engine.turn() === 'b' ? '180deg' : '0deg') : (piece[0] === 'b' ? '180deg' : '0deg')
-    
-    const style = StyleSheet.create({
-        sprite: {
-          width: sizes.square,
-          height: sizes.square,
-          transform: [{ rotate: rot }],
-        }
-    })
+	const destination = useAnimatedStyle(() => {
+		const transl = toTranslation(toPosition({ x: translateX.value, y: translateY.value }))
+		return {
+			backgroundColor: isDarkThemeEnabled ? colors.DarkPieceHeld : colors.LightPieceHeld,
+			opacity: isActive.value ? 1 : 0,
+			position: 'absolute',
+			zIndex: isActive.value ? 100 : 10,
+			width: sizes.square,
+			height: sizes.square,
+			transform: [{ translateX: transl.x }, { translateY: transl.y }],
+		}
+	})
 
-    return (
-        <>     
+	const rot = isFlipPiecesEnabled
+		? engine.turn() === 'b'
+			? '180deg'
+			: '0deg'
+		: piece[0] === 'b'
+			? '180deg'
+			: '0deg'
+
+	const style = StyleSheet.create({
+		sprite: {
+			width: sizes.square,
+			height: sizes.square,
+			transform: [{ rotate: rot }],
+		},
+	})
+
+	return (
+		<>
+			{/* Uncomment to highlight the FROM and TO squares
             <Animated.View style={destination} />
             <Animated.View style={source} />
-            <PanGestureHandler onGestureEvent={onPieceMoving} enabled={enabled}>
-                <Animated.View style={animatedStyle}>
-                    <Image source={PIECES[piece]} style={style.sprite} />
-                </Animated.View>
-            </PanGestureHandler>   
-        </>
-    );
+            */}
+			<PanGestureHandler onGestureEvent={onPieceMoving} enabled={enabled}>
+				<Animated.View style={animatedStyle}>
+					<Image source={PIECES[piece]} style={style.sprite} />
+				</Animated.View>
+			</PanGestureHandler>
+		</>
+	)
 }
 
 export default Piece
-

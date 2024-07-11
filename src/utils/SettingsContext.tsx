@@ -5,6 +5,8 @@ interface SettingsContextType {
   setIsSoundEnabled: React.Dispatch<React.SetStateAction<boolean>>;
   isFlipPiecesEnabled: boolean;
   setIsFlipPiecesEnabled: React.Dispatch<React.SetStateAction<boolean>>;
+  isDarkThemeEnabled: boolean;
+  setIsDarkThemeEnabled: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface SettingsProviderProps {
@@ -16,9 +18,10 @@ export const SettingsContext = createContext<SettingsContextType | undefined>(un
 export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) => {
   const [isSoundEnabled, setIsSoundEnabled] = useState(true);
   const [isFlipPiecesEnabled, setIsFlipPiecesEnabled] = useState(false);
+  const [isDarkThemeEnabled, setIsDarkThemeEnabled] = useState(true);
 
   return (
-    <SettingsContext.Provider value={{ isSoundEnabled, setIsSoundEnabled, isFlipPiecesEnabled, setIsFlipPiecesEnabled }}>
+    <SettingsContext.Provider value={{ isSoundEnabled, setIsSoundEnabled, isFlipPiecesEnabled, setIsFlipPiecesEnabled, isDarkThemeEnabled, setIsDarkThemeEnabled }}>
       {children}
     </SettingsContext.Provider>
   );
