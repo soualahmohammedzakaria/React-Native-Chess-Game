@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useState } from "react";
-import { View, StyleSheet, Text, Alert, Modal, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Text, Alert, Modal } from "react-native";
 import { sizes } from "@/constants/tokens";
 import Background from '@/components/Background';
 import Piece from "@/components/Piece";
@@ -9,9 +9,9 @@ import { calculateMaterialAdvantage } from "@/utils/materielAdvantage";
 import { playStartSound } from "@/utils/soundsPlayer";
 import { SettingsContext } from "@/utils/SettingsContext";
 import BottomTab from "@/components/BottomTab";
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Chess } from "chess.js";
-import { router } from "expo-router";
+import { getGameResult } from "@/utils/gameResult";
+import GameOver from "@/components/GameOver";
 
 const Board = () => {
     const context = useContext(SettingsContext);
@@ -40,29 +40,6 @@ const Board = () => {
             color: '#ccc',
             fontSize: 15,
         },
-        modalBackground: {
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: 'transparent',
-        },
-        modalContent: {
-            backgroundColor: '#242320',
-            padding: 20,
-            borderRadius: 10,
-            alignItems: 'center',
-        },
-        modalText: {
-            fontSize: 20,
-            fontWeight: 'bold',
-            color: 'white',
-            marginBottom: 20,
-        },
-        modalButton: {
-            flexDirection: 'row',
-            gap: 60,
-            width: '100%',
-        },
     });
 
     const chess = useStore(() => new Chess());
@@ -74,24 +51,15 @@ const Board = () => {
     const [gameResult, setGameResult] = useState('');
 
     const onTurn = useCallback(() => {
-      if (chess.isGameOver()) {
-         if (chess.isCheckmate()) {
-            setGameResult(`${play.player === 'w' ? 'White' : 'Black'} won by Checkmate`);
-         } else if (chess.isDraw()) {
-            setGameResult('Draw');
-         } else if (chess.isStalemate()) {
-            setGameResult('Draw by Stalemate');
-         } else if (chess.isThreefoldRepetition()) {
-            setGameResult('Draw by Threefold Repetition');
-         } else if (chess.isInsufficientMaterial()) {
-            setGameResult('Draw by Insufficient Material');
-         }
-         setModalVisible(true);   
-      }
-      setPlay({
-         player: play.player === 'w' ? 'b' : 'w',
-         board: chess.board()
-      });
+        if (chess.isGameOver()) {
+            const result = getGameResult(chess, play.player);
+            setGameResult(result);
+            setModalVisible(true);
+        }
+        setPlay({
+            player: play.player === 'w' ? 'b' : 'w',
+            board: chess.board()
+        });
     }, [chess, play.player]);
 
     const handleRestart = () => {
@@ -142,27 +110,7 @@ const Board = () => {
             </View>
             <Text style={styles.player}>White <Text style={styles.advantage}>{materialAdvantage > 0 && (`+${materialAdvantage}`)}</Text></Text>
             <BottomTab onRestart={handleRestart} onUndo={handleUndo} onCopyPGN={handleCopyPGN} moveNumber={chess.moveNumber()} simplified={false} />
-
-            <Modal
-                visible={isModalVisible}
-                transparent={true}
-                animationType="slide"
-                onRequestClose={() => setModalVisible(false)}
-            >
-                <View style={styles.modalBackground}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalText}>{gameResult}</Text>
-                        <View style={styles.modalButton}>
-                            <TouchableOpacity onPress={() => { router.back() }} activeOpacity={0.7}>
-                              <Icon name="exit-to-app" size={30} color="white" />
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => {handleRestart(); setModalVisible(false);}} activeOpacity={0.7}>
-                              <Icon name="refresh" size={30} color="white" />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-            </Modal>
+            <GameOver isVisible={isModalVisible} onClose={() => setModalVisible(false)} onRestart={handleRestart} gameResult={gameResult} />
         </GestureHandlerRootView>
     );
 }
