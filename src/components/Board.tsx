@@ -69,10 +69,13 @@ const Board = () => {
 
    const handleCopyPGN = () => {
       const pgn = chess.pgn();
-      if (!pgn) return Alert.alert('No PGN to copy');
-      // TODO: Add code here to copy the PGN to the clipboard of the phone
+      if (!pgn) {
+          Alert.alert('No PGN to copy');
+          return;
+      }
+      //Clipboard.setString(pgn);
       Alert.alert('PGN copied to clipboard');
-   };
+  };
 
    const materialAdvantage = calculateMaterialAdvantage(play.board);
 

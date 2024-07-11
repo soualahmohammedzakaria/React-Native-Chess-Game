@@ -2,7 +2,7 @@ import { colors } from '@/constants/tokens';
 import { SettingsContext } from '@/utils/SettingsContext';
 import { router } from 'expo-router';
 import { useContext } from 'react';
-import { BackHandler, StyleSheet, Text, TouchableOpacity} from 'react-native';
+import { BackHandler, StyleSheet, Text, TouchableOpacity, Image, View} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Chess() {
