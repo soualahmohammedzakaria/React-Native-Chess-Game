@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useState } from "react";
-import { View, StyleSheet, Text, Alert, Modal } from "react-native";
+import { View, StyleSheet, Text, Alert } from "react-native";
 import { sizes } from "@/constants/tokens";
 import Background from '@/components/Background';
 import Piece from "@/components/Piece";
@@ -9,9 +9,12 @@ import { calculateMaterialAdvantage } from "@/utils/materielAdvantage";
 import { playStartSound } from "@/utils/soundsPlayer";
 import { SettingsContext } from "@/utils/SettingsContext";
 import BottomTab from "@/components/BottomTab";
-import { Chess } from "chess.js";
+import { Chess, Square } from "chess.js";
 import { getGameResult } from "@/utils/gameResult";
 import GameOver from "@/components/GameOver";
+import Promotion from "@/components/Promotion";
+
+type Player = 'w' | 'b';
 
 const Board = () => {
     const context = useContext(SettingsContext);
@@ -43,12 +46,17 @@ const Board = () => {
     });
 
     const chess = useStore(() => new Chess());
-    const [play, setPlay] = useState({
+    const [play, setPlay] = useState<{
+        player: Player;
+        board: ReturnType<Chess['board']>;
+    }>({
         player: 'w',
         board: chess.board()
     });
     const [isModalVisible, setModalVisible] = useState(false);
     const [gameResult, setGameResult] = useState('');
+    const [isPromotionModalVisible, setPromotionModalVisible] = useState(false);
+    const [promotionSquare, setPromotionSquare] = useState<Square | null>(null);
 
     const onTurn = useCallback(() => {
         if (chess.isGameOver()) {
@@ -89,6 +97,15 @@ const Board = () => {
 
     const materialAdvantage = calculateMaterialAdvantage(play.board);
 
+    const handlePromotion = (piece: string) => {
+        if (promotionSquare) {
+            chess.move({ from: promotionSquare, to: promotionSquare, promotion: piece });
+            setPromotionSquare(null);
+            setPromotionModalVisible(false);
+            onTurn();
+        }
+    };
+
     return (
         <GestureHandlerRootView style={styles.container}>
             <Text style={styles.player}>Black <Text style={styles.advantage}>{materialAdvantage < 0 && (`+${-materialAdvantage}`)}</Text></Text>
@@ -111,8 +128,9 @@ const Board = () => {
             <Text style={styles.player}>White <Text style={styles.advantage}>{materialAdvantage > 0 && (`+${materialAdvantage}`)}</Text></Text>
             <BottomTab onRestart={handleRestart} onUndo={handleUndo} onCopyPGN={handleCopyPGN} moveNumber={chess.moveNumber()} simplified={false} />
             <GameOver isVisible={isModalVisible} onClose={() => setModalVisible(false)} onRestart={handleRestart} gameResult={gameResult} />
+            <Promotion isVisible={isPromotionModalVisible} onClose={() => setPromotionModalVisible(false)} onSelect={handlePromotion} player={play.player} />
         </GestureHandlerRootView>
     );
-}
+};
 
 export default Board;
