@@ -54,7 +54,6 @@ const ChessPiece = ({ engine, piece, position, onTurn, enabled }: PieceProps) =>
                     setPromotionSquare(move.to);
                     setPromotionFromSquare(from);
                     setPromotionModalVisible(true);
-					playMoveSound(engine, move, isSoundEnabled);
                     return;
                 }
                 engine.move(move);
@@ -69,11 +68,12 @@ const ChessPiece = ({ engine, piece, position, onTurn, enabled }: PieceProps) =>
 
     const handlePromotion = (piece: string) => {
         if (promotionSquare && promotionFromSquare) {
-            engine.move({ from: promotionFromSquare, to: promotionSquare, promotion: piece });
+            const move = engine.move({ from: promotionFromSquare, to: promotionSquare, promotion: piece });
             setPromotionSquare(null);
             setPromotionFromSquare(null);
             setPromotionModalVisible(false);
             onTurn();
+			playMoveSound(engine, move, isSoundEnabled);
         }
     };
 

@@ -51,13 +51,6 @@ export default function Chess() {
       >
         <Text style={styles.buttonText}>Settings</Text>
       </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => BackHandler.exitApp()}
-        activeOpacity={0.7}
-        style={styles.button}
-      >
-        <Text style={styles.buttonText}>Exit</Text>
-      </TouchableOpacity>
     </SafeAreaView>
   );
 };
