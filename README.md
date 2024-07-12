@@ -12,21 +12,24 @@ This is a repository for a fully-featured Chess game built with React Native on 
 - **Board Flipping**: Flip the board for each player's perspective.
 - **Game Over Screen**: Display a game over screen with the result.
 - **Promotion Choice**: Choose the piece for pawn promotion.
+
+
 - **Special Moves**: Support for castling and en passant moves.
 - **Materiel Advantage**: Calculate the Materiel Advantage in real time.
 
-## Application
+## Screenshots
 
 <div style="display: flex; flex-wrap: wrap; justify-content: space-around;">
-  <video src=".githubutils/demo.mp4" width="33%" controls>
-    Your browser does not support this form of content.
-  </video>
   <img src=".githubutils/dark.jfif" alt="Dark" width="33%"/>
   <img src=".githubutils/light.jfif" alt="Light" width="33%"/>
   <img src=".githubutils/promotion.jfif" alt="Promotion" width="33%"/>
   <img src=".githubutils/gameover.jfif" alt="Game Over" width="33%"/>
   <img src=".githubutils/settings.jfif" alt="Settings" width="33%"/>
 </div>
+
+## Video
+
+https://github.com/user-attachments/assets/dd670830-b4a1-4347-b2a0-589eb47043c1
 
 ## Installation
 
