@@ -12,10 +12,12 @@ This is a repository for a fully-featured Chess game built with React Native on 
 - **Board Flipping**: Flip the board for each player's perspective.
 - **Game Over Screen**: Display a game over screen with the result.
 - **Promotion Choice**: Choose the piece for pawn promotion.
-
-
 - **Special Moves**: Support for castling and en passant moves.
 - **Materiel Advantage**: Calculate the Materiel Advantage in real time.
+
+## Download
+
+ou can download the game and try it out using this link: [Download](https://bit.ly/download-chess-game)
 
 ## Screenshots
 
