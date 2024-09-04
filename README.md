@@ -17,7 +17,7 @@ This is a repository for a fully-featured Chess game built with React Native on 
 
 ## Download
 
-ou can download the game and try it out using this link: [Download](https://bit.ly/download-chess-game)
+You can download the game and try it out using this link: [Download](https://bit.ly/download-chess-game)
 
 ## Screenshots
 
